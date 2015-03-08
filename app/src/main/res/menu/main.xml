@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_question"
+        android:icon="@mipmap/ic_action_edit_convo"
+        android:title="@string/edit_conversation"
+        android:orderInCategory="0"
+        app:showAsAction="always"/>
 
 </menu>

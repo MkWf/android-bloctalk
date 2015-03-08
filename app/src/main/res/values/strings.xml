@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bloctalk</string>
+    <string name="edit_conversation">Edit conversation</string>
 </resources>
