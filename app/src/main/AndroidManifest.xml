@@ -2,6 +2,8 @@
     package="io.bloc.android.bloctalk">
 
     <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_PROFILE"/>
 
     <application
         android:name=".BlocTalkApplication"
@@ -17,6 +19,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="io.bloc.android.bloctalk.ui.activities.ConversationActivity"
+            android:parentActivityName="io.bloc.android.bloctalk.ui.activities.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="io.bloc.android.bloctalk.ui.activities.MainActivity" />
         </activity>
 
     </application>

@@ -6,15 +6,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
+
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.api.DataSource;
-import io.bloc.android.bloctalk.api.model.Conversation;
+import io.bloc.android.bloctalk.api.model.ConversationItem;
 
 /**
  * Created by Mark on 3/8/2015.
  */
 public class ConversationItemAdapter extends RecyclerView.Adapter<ConversationItemAdapter.ItemAdapterViewHolder> {
+
+    public static interface Delegate {
+        public void onItemClicked(ConversationItemAdapter itemAdapter, ConversationItem convoItem);
+    }
+
+    private WeakReference<Delegate> delegate;
+
+    public Delegate getDelegate() {
+        if (delegate == null) {
+            return null;
+        }
+        return delegate.get();
+    }
+    public void setDelegate(Delegate delegate) {
+        this.delegate = new WeakReference<Delegate>(delegate);
+    }
+
     @Override
     public ConversationItemAdapter.ItemAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int index) {
         View inflate = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.conversation_item, viewGroup, false);
@@ -32,18 +51,31 @@ public class ConversationItemAdapter extends RecyclerView.Adapter<ConversationIt
         return BlocTalkApplication.getSharedDataSource().getConvos().size();
     }
 
-    class ItemAdapterViewHolder extends RecyclerView.ViewHolder{
+    class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name;
+        ConversationItem convoItem;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
 
             name = (TextView)itemView.findViewById(R.id.conversation_item_name);
+
+            itemView.setOnClickListener(this);
         }
 
-        void update(Conversation conversationItem){
+        void update(ConversationItem conversationItem){
+            convoItem = conversationItem;
             name.setText(conversationItem.getName());
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v == itemView) {
+                if (getDelegate() != null) {
+                    getDelegate().onItemClicked(ConversationItemAdapter.this, convoItem);
+                }
+            }
         }
     }
 }

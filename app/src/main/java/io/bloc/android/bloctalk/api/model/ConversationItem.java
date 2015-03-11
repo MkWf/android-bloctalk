@@ -3,10 +3,10 @@ package io.bloc.android.bloctalk.api.model;
 /**
  * Created by Mark on 3/8/2015.
  */
-public class Conversation {
+public class ConversationItem {
     String name;
 
-    public Conversation(String name){
+    public ConversationItem(String name){
         setName(name);
     }
 

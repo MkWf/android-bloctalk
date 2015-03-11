@@ -1,5 +1,6 @@
 package io.bloc.android.bloctalk.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -8,13 +9,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
+import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.adapters.ConversationItemAdapter;
+import io.bloc.android.bloctalk.api.model.ConversationItem;
 
 /**
  * Created by Mark on 3/8/2015.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ConversationItemAdapter.Delegate {
 
     ConversationItemAdapter convoItemAdapter;
     Toolbar toolbar;
@@ -26,12 +29,15 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BlocTalkApplication.getSharedDataSource().query(this);
+
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         toolbar.setLogo(R.mipmap.ic_app_logo);
         toolbar.setTitle("BlocTalk");
         setSupportActionBar(toolbar);
 
         convoItemAdapter = new ConversationItemAdapter();
+        convoItemAdapter.setDelegate(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -43,5 +49,11 @@ public class MainActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onItemClicked(ConversationItemAdapter itemAdapter, ConversationItem convoItem) {
+        Intent intent = new Intent(this, ConversationActivity.class);
+        startActivity(intent);
     }
 }

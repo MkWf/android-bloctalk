@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_archive"
+        android:icon="@mipmap/ic_action_archive_convo"
+        android:title="@string/archive_convo"
+        android:orderInCategory="0"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/action_contact_info"
+        android:icon="@mipmap/ic_action_contact_info"
+        android:title="@string/contact_info"
+        android:orderInCategory="1"
+        app:showAsAction="always"/>
+</menu>
