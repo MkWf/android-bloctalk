@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.adapters.ConversationMessageItemAdapter;
+import io.bloc.android.bloctalk.adapters.ConversationNavigationAdapter;
 
 /**
  * Created by Mark on 3/10/2015.
@@ -22,8 +23,10 @@ public class ConversationActivity extends ActionBarActivity {
     ConversationMessageItemAdapter convoMsgItemAdapter;
     Toolbar toolbar;
     RecyclerView recyclerView;
+    RecyclerView navigationRecyclerView;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
+    private ConversationNavigationAdapter convoNavigationAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -41,11 +44,18 @@ public class ConversationActivity extends ActionBarActivity {
         //drawerLayout.setDrawerListener(drawerToggle);
 
         convoMsgItemAdapter = new ConversationMessageItemAdapter();
-
         recyclerView = (RecyclerView) findViewById(R.id.rv_activity_conversation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());  //may set to null later on
         recyclerView.setAdapter(convoMsgItemAdapter);
+
+        convoNavigationAdapter = new ConversationNavigationAdapter();
+        navigationRecyclerView = (RecyclerView) findViewById(R.id.rv_nav_activity_conversation);
+        navigationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        navigationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        navigationRecyclerView.setAdapter(convoNavigationAdapter);
+
+
     }
 
     @Override

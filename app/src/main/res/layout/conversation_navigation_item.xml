@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/conversation_item_circle"
+        android:id="@+id/conversation_navigation_item_circle"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginLeft="10dp"
@@ -12,7 +12,7 @@
         android:src="@mipmap/conversation_item_cricle"/>
 
     <ImageView
-        android:id="@+id/conversation_item_image"
+        android:id="@+id/conversation_navigation_item_image"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginLeft="28dp"
@@ -21,10 +21,10 @@
         android:src="@mipmap/conversation_item_user"/>
 
     <TextView
-        android:id="@+id/conversation_item_name"
+        android:id="@+id/conversation_navigation_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/conversation_item_circle"
+        android:layout_below="@id/conversation_navigation_item_circle"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"/>
 
