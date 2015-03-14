@@ -41,6 +41,7 @@ public class ConversationActivity extends ActionBarActivity {
         String name = intent.getStringExtra("name");
 
         BlocTalkApplication.getSharedDataSource().queryForMessages(this, id);
+        //recyclerView.scrollToPosition();
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
         toolbar.setLogo(R.mipmap.ic_app_logo);
