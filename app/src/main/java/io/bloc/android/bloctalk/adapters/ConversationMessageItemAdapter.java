@@ -1,12 +1,11 @@
 package io.bloc.android.bloctalk.adapters;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
@@ -28,43 +27,48 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
     public void onBindViewHolder(ConversationMessageItemAdapter.ItemAdapterViewHolder holder, int index) {
         DataSource sharedDataSource = BlocTalkApplication.getSharedDataSource();
         holder.update(sharedDataSource.getMsgs().get(index));
-        //holder.update();
     }
 
     @Override
     public int getItemCount() {
         return BlocTalkApplication.getSharedDataSource().getMsgs().size();
-        //return 5;
     }
 
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView body;
+        ImageView sender;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
 
             body = (TextView) itemView.findViewById(R.id.conversation_message_item_body);
-
+            sender = (ImageView) itemView.findViewById(R.id.conversation_message_item_sender_indicator);
         }
 
         void update(MessageItem messageItem){
-            LinearLayout.LayoutParams
-                    lllp=(LinearLayout.LayoutParams)body.getLayoutParams();
-
+            RelativeLayout.LayoutParams
+                    lpBody = (RelativeLayout.LayoutParams)body.getLayoutParams();
+            RelativeLayout.LayoutParams
+                    lpSender = (RelativeLayout.LayoutParams)sender.getLayoutParams();
 
             if(messageItem.getSender() == MessageItem.OUTGOING_MSG){
-                lllp.gravity= Gravity.RIGHT;
-                body.setLayoutParams(lllp);
-                body.setTextColor(Color.BLUE);
+                lpBody.addRule(RelativeLayout.LEFT_OF, sender.getId());
 
+                lpSender.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                sender.setImageResource(R.mipmap.conversation_message_item_sender_outgoing);
             }else{
-                lllp.gravity= Gravity.LEFT;
-                body.setLayoutParams(lllp);
-                body.setTextColor(Color.RED);
+                lpBody.addRule(RelativeLayout.RIGHT_OF, sender.getId());
+
+                lpSender.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                sender.setImageResource(R.mipmap.conversation_message_item_sender_incoming);
             }
 
             body.setText(messageItem.getBody());
+            body.setLayoutParams(lpBody);
+
+            body.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            sender.getLayoutParams().height = body.getMeasuredHeight() + 10;
         }
 
         @Override
