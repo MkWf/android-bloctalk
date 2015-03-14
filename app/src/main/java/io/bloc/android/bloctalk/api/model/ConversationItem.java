@@ -16,7 +16,6 @@ public class ConversationItem {
         setName(name);
         setPhoto(photo);
         setUnreadMsgCount(unreadMsgCount);
-
     }
 
     public int getId() { return id; }
