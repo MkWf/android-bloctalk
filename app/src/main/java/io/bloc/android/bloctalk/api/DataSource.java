@@ -117,7 +117,8 @@ public class DataSource {
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
                 String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
-                messages.add(new MessageItem(body, read));
+                int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
+                messages.add(new MessageItem(body, read, sender));
             }
         }
         //String body = cursor.getString(cursor.getColumnIndex("body"));

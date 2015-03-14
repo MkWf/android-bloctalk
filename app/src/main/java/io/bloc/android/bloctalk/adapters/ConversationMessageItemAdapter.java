@@ -1,9 +1,12 @@
 package io.bloc.android.bloctalk.adapters;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
@@ -46,12 +49,22 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
         }
 
         void update(MessageItem messageItem){
-            body.setText(messageItem.getBody());
-            //body.setText("Hey!");
-        }
+            LinearLayout.LayoutParams
+                    lllp=(LinearLayout.LayoutParams)body.getLayoutParams();
 
-        void update(){
-            body.setText("Hey!");
+
+            if(messageItem.getSender() == MessageItem.OUTGOING_MSG){
+                lllp.gravity= Gravity.RIGHT;
+                body.setLayoutParams(lllp);
+                body.setTextColor(Color.BLUE);
+
+            }else{
+                lllp.gravity= Gravity.LEFT;
+                body.setLayoutParams(lllp);
+                body.setTextColor(Color.RED);
+            }
+
+            body.setText(messageItem.getBody());
         }
 
         @Override
