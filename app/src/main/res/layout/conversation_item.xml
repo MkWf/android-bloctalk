@@ -18,7 +18,6 @@
         android:layout_height="64dp"
         android:layout_marginLeft="28dp"
         android:layout_marginTop="27dp"
-        android:background="#FF0000"
         android:src="@mipmap/conversation_item_user"/>
 
     <TextView
@@ -28,6 +27,18 @@
         android:layout_below="@id/conversation_item_circle"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/conversation_item_unread_msgs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_alignTop="@id/conversation_item_circle"
+        android:layout_alignRight="@id/conversation_item_circle"
+        android:background="@mipmap/unread_msg_background"/>
+
 
     <ImageView
         android:layout_width="wrap_content"

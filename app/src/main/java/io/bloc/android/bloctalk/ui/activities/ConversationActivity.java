@@ -1,5 +1,6 @@
 package io.bloc.android.bloctalk.ui.activities;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.adapters.ConversationMessageItemAdapter;
 import io.bloc.android.bloctalk.adapters.ConversationNavigationAdapter;
@@ -34,6 +36,11 @@ public class ConversationActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
+        Intent intent = getIntent();
+        int id = intent.getIntExtra("id", -1);
+
+        BlocTalkApplication.getSharedDataSource().queryForMessages(this, id);
+
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
         toolbar.setLogo(R.mipmap.ic_app_logo);
         setSupportActionBar(toolbar);
@@ -54,8 +61,6 @@ public class ConversationActivity extends ActionBarActivity {
         navigationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         navigationRecyclerView.setItemAnimator(new DefaultItemAnimator());
         navigationRecyclerView.setAdapter(convoNavigationAdapter);
-
-
     }
 
     @Override

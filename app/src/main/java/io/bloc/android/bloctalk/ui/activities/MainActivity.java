@@ -54,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
     @Override
     public void onItemClicked(ConversationItemAdapter itemAdapter, ConversationItem convoItem) {
         Intent intent = new Intent(this, ConversationActivity.class);
+        intent.putExtra("id", convoItem.getId());
         startActivity(intent);
     }
 }

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -54,12 +55,16 @@ public class ConversationItemAdapter extends RecyclerView.Adapter<ConversationIt
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name;
+        ImageView photo;
+        TextView unreadMgs;
         ConversationItem convoItem;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
 
             name = (TextView)itemView.findViewById(R.id.conversation_item_name);
+            photo = (ImageView) itemView.findViewById(R.id.conversation_item_image);
+            unreadMgs = (TextView) itemView.findViewById(R.id.conversation_item_unread_msgs);
 
             itemView.setOnClickListener(this);
         }
@@ -67,6 +72,14 @@ public class ConversationItemAdapter extends RecyclerView.Adapter<ConversationIt
         void update(ConversationItem conversationItem){
             convoItem = conversationItem;
             name.setText(conversationItem.getName());
+            unreadMgs.setText(Integer.toString(conversationItem.getUnreadMsgCount()));
+
+
+            if(conversationItem.getPhoto() != null){
+                photo.setImageURI(conversationItem.getPhoto());
+            }else{
+                photo.setImageResource(R.mipmap.conversation_item_user);
+            }
         }
 
         @Override
