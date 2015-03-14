@@ -56,12 +56,18 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
                 lpBody.addRule(RelativeLayout.LEFT_OF, sender.getId());
 
                 lpSender.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                sender.setImageResource(R.mipmap.conversation_message_item_sender_outgoing);
+                sender.setImageResource(R.mipmap.conversation_message_item_outgoing);
             }else{
                 lpBody.addRule(RelativeLayout.RIGHT_OF, sender.getId());
 
                 lpSender.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                sender.setImageResource(R.mipmap.conversation_message_item_sender_incoming);
+
+                if(messageItem.getRead() == 0){
+                    sender.setImageResource(R.mipmap.conversation_message_item_incoming_unread);
+                }
+                else{
+                    sender.setImageResource(R.mipmap.conversation_message_item_incoming);
+                }
             }
 
             body.setText(messageItem.getBody());
