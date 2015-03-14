@@ -38,11 +38,13 @@ public class ConversationActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
+        String name = intent.getStringExtra("name");
 
         BlocTalkApplication.getSharedDataSource().queryForMessages(this, id);
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
         toolbar.setLogo(R.mipmap.ic_app_logo);
+        toolbar.setTitle(name);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

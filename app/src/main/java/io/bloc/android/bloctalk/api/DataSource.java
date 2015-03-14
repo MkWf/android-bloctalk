@@ -43,7 +43,7 @@ public class DataSource {
 
         if(cursor.getCount() > 0){
             cursor.moveToFirst();
-            dumpCursor(cursor);
+            //dumpCursor(cursor);
 
             int id = -1;
             String name = "";
@@ -107,14 +107,14 @@ public class DataSource {
 
         String selection = "thread_id = "+id;
         Uri conversationUri = Uri.parse("content://sms//");
-        Cursor cursor = context.getContentResolver().query(conversationUri, null, selection, null, null);
+        Cursor cursor = context.getContentResolver().query(conversationUri, null, selection, null, "_id ASC");
 
         if(cursor.getCount() > 0){
             dumpCursor(cursor);
 
             cursor.moveToFirst();
 
-            for(int i = 0; i<cursor.getCount(); i++){
+            for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
                 String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
                 messages.add(new MessageItem(body, read));
