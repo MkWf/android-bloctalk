@@ -1,11 +1,10 @@
 package io.bloc.android.bloctalk.api;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.provider.Telephony;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,19 +37,16 @@ public class DataSource {
 
     public void query(Context context){
 
-        ContentValues values = new ContentValues();
+       // ContentValues values = new ContentValues();
 
-        values.put(Telephony.Sms.Conversations.DATE_SENT, "123456789");
-        values.put(Telephony.Sms.Conversations.BODY, "How are you doing?!");
-        values.put(Telephony.Sms.Conversations.TYPE, 1);
+      //  values.put(Telephony.Sms)
+     //   values.put(Telephony.Sms.Conversations.BODY, "Hello?");
+       // values.put(Telephony.Sms.Conversations.TYPE, MessageItem.OUTGOING_MSG);
 
-        Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
-
-
-        Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
+     //   Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
 
         //long rawContactId = ContentUris.parseId(rawContactUri);
-
+        Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
 
         final String[] projection = new String[]{"*"};
         Cursor cursor = context.getContentResolver().query(
@@ -59,6 +55,7 @@ public class DataSource {
 
         if(cursor.getCount() > 0){
             cursor.moveToFirst();
+            Log.i("Split", "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$CONVERSATIONS");
             dumpCursor(cursor);
 
             int id = -1;
@@ -78,17 +75,18 @@ public class DataSource {
                             null, "_id = " + recipientID, null, null);
                     if(address.getCount() > 0){
                         address.moveToFirst();
+                        Log.i("Split", "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ADDRESSES");
+                        dumpCursor(address);
+
                         String emailOrPhone = address.getString(address.getColumnIndexOrThrow("address"));
 
+                        Log.i("Split", "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$CONTACTINFO");
                         if(emailOrPhone.contains("@")){
                             Uri lookupByEmail = Uri.withAppendedPath(
                                     ContactsContract.CommonDataKinds.Email.CONTENT_LOOKUP_URI,
                                     Uri.encode(emailOrPhone));
                             Cursor contactInfo = context.getContentResolver().query(lookupByEmail, null, null, null, null);
-
-                            if(contactInfo.getCount() > 0){
-
-                            }
+                            dumpCursor(contactInfo);
                         }
                         else if(emailOrPhone.equals("")){
                             name = "Anonymous";
@@ -97,6 +95,7 @@ public class DataSource {
                                     ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
                                     Uri.encode(emailOrPhone));
                             Cursor contactInfo = context.getContentResolver().query(lookupByPhone, null, null, null, null);
+                            dumpCursor(contactInfo);
 
                             if(contactInfo.getCount() > 0){
                                 contactInfo.moveToFirst();

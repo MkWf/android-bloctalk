@@ -20,7 +20,7 @@ public class MessageItem {
 
     public void setBody(String body) { this.body = body; }
     public void setId(int id) { this.id = id; }
-    public void setRead(int read) { this.id = read; }
+    public void setRead(int read) { this.read = read; }
     public void setSender(int sender) { this.sender = sender;}
 
     public String getBody() { return body; }

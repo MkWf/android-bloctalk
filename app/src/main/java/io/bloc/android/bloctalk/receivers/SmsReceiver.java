@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
+
+import io.bloc.android.bloctalk.api.model.MessageItem;
 
 import static android.provider.Telephony.Sms.Intents.getMessagesFromIntent;
 
@@ -33,7 +36,27 @@ public class SmsReceiver extends BroadcastReceiver {
                     int icc = message.getIndexOnIcc();
                     int icc2 = message.getStatusOnIcc();
 
-                    Uri mNewUri;
+                    Uri conversationUri = Uri.parse("content://sms//");
+                    Cursor cursor = context.getContentResolver().query(conversationUri, null, Telephony.Sms.ADDRESS + "= ?", new String[]{sender}, null);
+
+                    if(cursor.getCount() > 0){
+                        cursor.moveToFirst();
+                        String a = cursor.getString(cursor.getColumnIndexOrThrow("address"));
+                        ContentValues values = new ContentValues();
+
+                        values.put(Telephony.Sms.ADDRESS, sender);
+                        values.put(Telephony.Sms.TYPE, MessageItem.INCOMING_MSG);
+                        values.put(Telephony.Sms.BODY, msg);
+                        values.put(Telephony.Sms.DATE_SENT, time);
+                        context.getContentResolver().insert(
+                                Telephony.Sms.CONTENT_URI,
+                                values);
+                    }
+
+                    //Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
+
+
+                    /*Uri mNewUri;
 
                     ContentValues values = new ContentValues();
 
@@ -45,9 +68,9 @@ public class SmsReceiver extends BroadcastReceiver {
                     mNewUri = context.getContentResolver().insert(
                             Telephony.Sms.CONTENT_URI,
                             values
-                    );
+                    );*/
 
-                    /*Notification.Builder noti = new Notification.Builder(context)
+                    /*otification.Builder noti = new Notification.Builder(context)
                             .setContentTitle("Message")
                             .setContentText(sender + "\n" + msg + "\n" + Boolean.toString(isEmail) + "\n" + data.toString() + "\n" + Long.toString(time)
                                                 + "\n" + Integer.toString(icc) +  "\n" + Integer.toString(icc2))

@@ -38,6 +38,7 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
 
         TextView body;
         ImageView sender;
+        MessageItem item;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
@@ -47,6 +48,8 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
         }
 
         void update(MessageItem messageItem){
+            item = messageItem;
+
             RelativeLayout.LayoutParams
                     lpBody = (RelativeLayout.LayoutParams)body.getLayoutParams();
             RelativeLayout.LayoutParams
