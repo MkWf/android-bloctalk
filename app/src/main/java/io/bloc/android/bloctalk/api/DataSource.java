@@ -43,17 +43,17 @@ public class DataSource {
 
         if(cursor.getCount() > 0){
             cursor.moveToFirst();
-            //dumpCursor(cursor);
+            dumpCursor(cursor);
 
             int id = -1;
             String name = "";
-            int unreadMsgCount;
+            int unreadMsgCount=0;
             String photo;
             Uri photoURI = null;
 
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
                 id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
-                unreadMsgCount = cursor.getInt(cursor.getColumnIndexOrThrow("unread_count"));
+                //unreadMsgCount = cursor.getInt(cursor.getColumnIndexOrThrow("unread_count"));
                 String recipientIDs = cursor.getString(cursor.getColumnIndexOrThrow("recipient_ids"));
 
                 for (String recipientID : recipientIDs.split(" ")) {

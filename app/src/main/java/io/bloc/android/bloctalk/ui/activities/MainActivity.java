@@ -2,6 +2,7 @@ package io.bloc.android.bloctalk.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -28,6 +29,12 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
+            Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+            startActivity(intent);
+        }
 
         BlocTalkApplication.getSharedDataSource().query(this);
 
