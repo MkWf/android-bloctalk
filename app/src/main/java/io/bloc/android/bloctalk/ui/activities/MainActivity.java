@@ -65,4 +65,10 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
         intent.putExtra("name", convoItem.getName());
         startActivity(intent);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        BlocTalkApplication.getSharedDataSource().getConvos().clear();
+    }
 }
