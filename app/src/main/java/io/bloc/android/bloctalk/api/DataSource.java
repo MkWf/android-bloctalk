@@ -1,9 +1,11 @@
 package io.bloc.android.bloctalk.api;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.Telephony;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,21 @@ public class DataSource {
     }
 
     public void query(Context context){
+
+        ContentValues values = new ContentValues();
+
+        values.put(Telephony.Sms.Conversations.DATE_SENT, "123456789");
+        values.put(Telephony.Sms.Conversations.BODY, "How are you doing?!");
+        values.put(Telephony.Sms.Conversations.TYPE, 1);
+
+        Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
+
+
         Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
+
+        //long rawContactId = ContentUris.parseId(rawContactUri);
+
+
         final String[] projection = new String[]{"*"};
         Cursor cursor = context.getContentResolver().query(
                 allConversations,
@@ -53,7 +69,7 @@ public class DataSource {
 
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
                 id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
-                //unreadMsgCount = cursor.getInt(cursor.getColumnIndexOrThrow("unread_count"));
+                unreadMsgCount = cursor.getInt(cursor.getColumnIndexOrThrow("unread_count"));
                 String recipientIDs = cursor.getString(cursor.getColumnIndexOrThrow("recipient_ids"));
 
                 for (String recipientID : recipientIDs.split(" ")) {
@@ -74,7 +90,9 @@ public class DataSource {
 
                             }
                         }
-                        else{
+                        else if(emailOrPhone.equals("")){
+                            name = "Anonymous";
+                        }else{
                             Uri lookupByPhone = Uri.withAppendedPath(
                                     ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
                                     Uri.encode(emailOrPhone));
