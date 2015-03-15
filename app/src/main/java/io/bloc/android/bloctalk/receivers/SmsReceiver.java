@@ -39,7 +39,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
                     notificationManager.notify(0, noti.build());*/
 
-                    
+
                 }
             }
         }

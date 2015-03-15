@@ -30,5 +30,29 @@
         android:layout_height="match_parent"
         android:background="?android:windowBackground"
         android:layout_gravity="left"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <EditText
+            android:id="@+id/activity_conversation_message_field"
+            android:layout_width="275dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:hint="Type a message..."
+            android:background="@color/black_26"/>
+
+        <Button
+            android:id="@+id/activity_conversation_message_send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:text="Send"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
 </android.support.v4.widget.DrawerLayout>
 
