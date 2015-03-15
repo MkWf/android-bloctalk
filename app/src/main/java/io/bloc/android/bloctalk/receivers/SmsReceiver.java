@@ -1,8 +1,11 @@
 package io.bloc.android.bloctalk.receivers;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
 import static android.provider.Telephony.Sms.Intents.getMessagesFromIntent;
@@ -29,6 +32,20 @@ public class SmsReceiver extends BroadcastReceiver {
                     long time = message.getTimestampMillis();
                     int icc = message.getIndexOnIcc();
                     int icc2 = message.getStatusOnIcc();
+
+                    Uri mNewUri;
+
+                    ContentValues values = new ContentValues();
+
+                    values.put(Telephony.Sms._ID, 5);
+                    values.put(Telephony.Sms.ADDRESS, "55555555");
+                    values.put(Telephony.Sms.BODY, "555");
+                    values.put(Telephony.Sms.DATE_SENT, 5555555);
+
+                    mNewUri = context.getContentResolver().insert(
+                            Telephony.Sms.CONTENT_URI,
+                            values
+                    );
 
                     /*Notification.Builder noti = new Notification.Builder(context)
                             .setContentTitle("Message")
