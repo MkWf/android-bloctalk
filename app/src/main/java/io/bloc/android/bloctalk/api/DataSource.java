@@ -1,14 +1,17 @@
 package io.bloc.android.bloctalk.api;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.Telephony;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.api.model.ConversationItem;
 import io.bloc.android.bloctalk.api.model.MessageItem;
 
@@ -132,10 +135,11 @@ public class DataSource {
             cursor.moveToFirst();
 
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
+                String msgId = cursor.getString(cursor.getColumnIndexOrThrow("_id"));
                 String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
                 int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
-                messages.add(new MessageItem(body, read, sender));
+                messages.add(new MessageItem(msgId, body, read, sender));
             }
         }
         //String body = cursor.getString(cursor.getColumnIndex("body"));
@@ -150,5 +154,14 @@ public class DataSource {
         //}
     }
 
+    public void updateMsgReadStatus(String msgId){
+        Context context = BlocTalkApplication.getSharedInstance();
+
+        ContentValues values = new ContentValues();
+        values.put(Telephony.Sms.READ, "1");
+
+        Uri conversationUri = Uri.parse("content://sms//");
+        context.getContentResolver().update(conversationUri, values, Telephony.Sms._ID + "= ?", new String[]{msgId});
+    }
 
 }

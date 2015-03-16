@@ -67,6 +67,7 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
 
                 if(messageItem.getRead() == 0){
                     sender.setImageResource(R.mipmap.conversation_message_item_incoming_unread);
+                    BlocTalkApplication.getSharedDataSource().updateMsgReadStatus(messageItem.getId());
                 }
                 else{
                     sender.setImageResource(R.mipmap.conversation_message_item_incoming);
