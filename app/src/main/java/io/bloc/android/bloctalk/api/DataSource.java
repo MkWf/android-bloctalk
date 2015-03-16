@@ -24,6 +24,7 @@ public class DataSource {
 
     List<ConversationItem> conversations;
     List<MessageItem> messages;
+    String currentRecipient;
 
     public DataSource() {
         conversations = new ArrayList<>();
@@ -36,6 +37,11 @@ public class DataSource {
     }
     public List<MessageItem> getMsgs(){
         return messages;
+    }
+    public String getCurrentRecipient() { return currentRecipient; }
+
+    public void setCurrentRecipient(String recipient) {
+        this.currentRecipient = recipient;
     }
 
     public void query(Context context){
@@ -140,6 +146,8 @@ public class DataSource {
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
                 int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
                 messages.add(new MessageItem(msgId, body, read, sender));
+
+                BlocTalkApplication.getSharedDataSource().setCurrentRecipient(cursor.getString(cursor.getColumnIndexOrThrow("address")));
             }
         }
         //String body = cursor.getString(cursor.getColumnIndex("body"));
