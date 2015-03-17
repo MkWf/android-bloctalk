@@ -1,6 +1,7 @@
 package io.bloc.android.bloctalk;
 
 import android.app.Application;
+import android.support.v7.app.ActionBarActivity;
 
 import io.bloc.android.bloctalk.api.DataSource;
 
@@ -19,6 +20,7 @@ public class BlocTalkApplication extends Application {
 
     private static BlocTalkApplication sharedInstance;
     private DataSource dataSource;
+    private ActionBarActivity currentActivity = null;
 
     public DataSource getDataSource() {
         return dataSource;
@@ -30,6 +32,13 @@ public class BlocTalkApplication extends Application {
 
         sharedInstance = this;
         dataSource = new DataSource();
+    }
+
+    public ActionBarActivity getCurrentActivity(){
+        return currentActivity;
+    }
+    public void setCurrentActivity(ActionBarActivity mCurrentActivity){
+        this.currentActivity = mCurrentActivity;
     }
 
 }

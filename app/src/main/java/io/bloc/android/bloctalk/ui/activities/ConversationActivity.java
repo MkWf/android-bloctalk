@@ -48,6 +48,8 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
+        BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
+
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
         String name = intent.getStringExtra("name");
@@ -179,5 +181,15 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                 SmsManager sms = SmsManager.getDefault();
                 sms.sendTextMessage(BlocTalkApplication.getSharedDataSource().getCurrentRecipient(), null, userMsg, sentPI, deliveredPI);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
+    }
+
+    public void notifyAdapter() {
+        convoMsgItemAdapter.notifyDataSetChanged();
     }
 }

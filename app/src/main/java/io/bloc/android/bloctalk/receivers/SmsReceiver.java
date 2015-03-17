@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
+import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.api.model.MessageItem;
+import io.bloc.android.bloctalk.ui.activities.ConversationActivity;
 
 import static android.provider.Telephony.Sms.Intents.getMessagesFromIntent;
 
@@ -19,20 +21,26 @@ import static android.provider.Telephony.Sms.Intents.getMessagesFromIntent;
 public class SmsReceiver extends BroadcastReceiver {
 
     private static final String ACTION_SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String ACTION_SMS_DELIVER = "android.provider.Telephony.SMS_DELIVER";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        if(action.equals(ACTION_SMS_RECEIVED)){
+        String sender="";
+        String msg="";
+        long time;
+
+
+        if(action.equals(ACTION_SMS_RECEIVED) || action.equals(ACTION_SMS_DELIVER)){
             SmsMessage[] messages = getMessagesFromIntent(intent);
             if (messages != null) {
                 for(SmsMessage message : messages){
-                    String sender = message.getDisplayOriginatingAddress();
-                    String msg = message.getDisplayMessageBody();
+                    sender = message.getDisplayOriginatingAddress();
+                    msg = message.getDisplayMessageBody();
                     boolean isEmail = message.isEmail();
                     byte[] data = message.getUserData();
-                    long time = message.getTimestampMillis();
+                    time = message.getTimestampMillis();
                     int icc = message.getIndexOnIcc();
                     int icc2 = message.getStatusOnIcc();
 
@@ -40,8 +48,8 @@ public class SmsReceiver extends BroadcastReceiver {
                     Cursor cursor = context.getContentResolver().query(conversationUri, null, Telephony.Sms.ADDRESS + "= ?", new String[]{sender}, null);
 
                     if(cursor.getCount() > 0){
-                        cursor.moveToFirst();
-                        String a = cursor.getString(cursor.getColumnIndexOrThrow("address"));
+                        //cursor.moveToFirst();
+                        //String a = cursor.getString(cursor.getColumnIndexOrThrow("address"));
                         ContentValues values = new ContentValues();
 
                         values.put(Telephony.Sms.ADDRESS, sender);
@@ -52,35 +60,14 @@ public class SmsReceiver extends BroadcastReceiver {
                                 Telephony.Sms.CONTENT_URI,
                                 values);
                     }
-
-                    //Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
-
-
-                    /*Uri mNewUri;
-
-                    ContentValues values = new ContentValues();
-
-                    values.put(Telephony.Sms._ID, 5);
-                    values.put(Telephony.Sms.ADDRESS, "55555555");
-                    values.put(Telephony.Sms.BODY, "555");
-                    values.put(Telephony.Sms.DATE_SENT, 5555555);
-
-                    mNewUri = context.getContentResolver().insert(
-                            Telephony.Sms.CONTENT_URI,
-                            values
-                    );*/
-
-                    /*otification.Builder noti = new Notification.Builder(context)
-                            .setContentTitle("Message")
-                            .setContentText(sender + "\n" + msg + "\n" + Boolean.toString(isEmail) + "\n" + data.toString() + "\n" + Long.toString(time)
-                                                + "\n" + Integer.toString(icc) +  "\n" + Integer.toString(icc2))
-                            .setSmallIcon(R.mipmap.conversation_item_user);
-
-                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-                    notificationManager.notify(0, noti.build());*/
-
-
                 }
+
+                if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)){
+                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, 0, MessageItem.INCOMING_MSG));
+                    ConversationActivity ca = (ConversationActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
+                    ca.notifyAdapter();
+                }
+
             }
         }
     }

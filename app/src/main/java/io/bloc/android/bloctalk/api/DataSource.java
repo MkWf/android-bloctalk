@@ -141,13 +141,14 @@ public class DataSource {
             cursor.moveToFirst();
 
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
-                String msgId = cursor.getString(cursor.getColumnIndexOrThrow("_id"));
+                //String msgId = cursor.getString(cursor.getColumnIndexOrThrow("thread_id"));
                 String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
                 int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
-                messages.add(new MessageItem(msgId, body, read, sender));
+                messages.add(new MessageItem(body, read, sender));
 
                 BlocTalkApplication.getSharedDataSource().setCurrentRecipient(cursor.getString(cursor.getColumnIndexOrThrow("address")));
+
             }
         }
         //String body = cursor.getString(cursor.getColumnIndex("body"));

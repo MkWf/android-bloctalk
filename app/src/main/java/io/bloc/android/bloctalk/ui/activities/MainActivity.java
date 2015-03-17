@@ -30,6 +30,8 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
+
         if (!Telephony.Sms.getDefaultSmsPackage(this).equals(getPackageName())) {
             Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
             intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
@@ -70,5 +72,15 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
     protected void onStop() {
         super.onStop();
         BlocTalkApplication.getSharedDataSource().getConvos().clear();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
+    }
+
+    public void notifyAdapter(){
+
     }
 }

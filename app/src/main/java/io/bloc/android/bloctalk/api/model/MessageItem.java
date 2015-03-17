@@ -10,22 +10,22 @@ public class MessageItem {
     String id;
     String body;
     int read;
-    int sender;
+    int type;
 
-    public MessageItem(String id, String body, int read, int sender){
-        setId(id);
+    public MessageItem(String body, int read, int type){
+        //setId(id);
         setBody(body);
         setRead(read);
-        setSender(sender);
+        setType(type);
     }
 
     public void setBody(String body) { this.body = body; }
     public void setId(String id) { this.id = id; }
     public void setRead(int read) { this.read = read; }
-    public void setSender(int sender) { this.sender = sender;}
+    public void setType(int type) { this.type = type;}
 
     public String getBody() { return body; }
     public String getId() { return id; }
     public int getRead() { return read; }
-    public int getSender() { return sender; }
+    public int getType() { return type; }
 }

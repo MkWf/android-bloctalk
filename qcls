@@ -1,0 +1,161 @@
+[33mcommit aadced572bca905210f05a48ce7f755a4f68d3e4[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Tue Mar 17 17:34:22 2015 -0400
+
+    Removed service from manifest
+
+[33mcommit fd5198101f9018f3187dbb3798cf447c6858d917[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Mon Mar 16 01:53:05 2015 -0400
+
+    DataSource now holds the recipient for the visible conversation and sms messages are sent to the recipient. Still requires the message to be added to the DataSource and for the adapter to display it.
+
+[33mcommit 7304c4d506a86668f2128e3b73983f9f61c26def[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 15 22:47:12 2015 -0400
+
+    Unread messages in the conversation activity get set to read and the message indicator is changed. The unread message count in the main activity is then updated to 0 as well.
+
+[33mcommit f7b87007e220c42fac4c2a0f8fc6461421de7c6d[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 15 19:54:29 2015 -0400
+
+    New messages are retrieved by the Receiver and inserted into the sms content provider. The conversation's messaged display the new messaged items. Fixed message item class bug to now update its read variable
+
+[33mcommit ff8eb3eb203948278cc61f9f72f9b3fcdd5b7c01[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 15 01:01:31 2015 -0400
+
+    Now able to insert values into the content provider
+
+[33mcommit d5ad81b6c315366bb9efdbd537d82f6192dfa62a[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 14 23:18:31 2015 -0400
+
+    Added onStop to clear the convos to prevent duplication of the conversation list when the user flips back and forth between activities.
+
+[33mcommit ce3e72fedb026cc71ff33f9c8b3176fd8e206d42[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 14 21:20:38 2015 -0400
+
+    Beginning stage of inputting the received message in SmsReceiver to the content provider
+
+[33mcommit c43d0a1942457696eb58877d33100ae1c639244b[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 14 20:51:23 2015 -0400
+
+    Updated activity_conversation by add edittext for typing a message and a send button
+
+[33mcommit d2771824ffa51df34b91b8936f840910c92b9eef[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 14 20:27:06 2015 -0400
+
+    BlocTalk checks for default status at launch and aloows user to change setting. Received messages are sent to SmsReceiver
+
+[33mcommit 4dd73069120b7ecbc461a74c51492ad3d2b40975[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 14 00:17:20 2015 -0400
+
+    Updated manifest with Sms/Mms receivers. Added base implementation for the receivers in code
+
+[33mcommit 6891f3b26315984e2b78996b5c7309d6bf5cae8e[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Mar 13 23:33:24 2015 -0400
+
+    Unread messages are displayed with a different color
+
+[33mcommit 85148d0c021b099c4c098c6444ab8f21dbc958bd[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Mar 13 23:29:15 2015 -0400
+
+    Added message indicators for conversation_message_item layout
+
+[33mcommit 6855a86b458fae5f8ee3ed230abc3ba53246494d[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Mar 13 22:10:45 2015 -0400
+
+    Messages have their gravity set to left or right based on who sent it.
+
+[33mcommit 3e03983a41e18a49600333beb43f3579d8482e92[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Mar 13 21:36:34 2015 -0400
+
+    ConversationActivity toolbar now displays the message recipient's name
+
+[33mcommit e4545a9e55e3764afc95208e1210c522dbad432a[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Mar 13 20:55:59 2015 -0400
+
+    DataSource queries all conversations and messages. MainActivity calls for the conversations. Conversation activity calls for the messages for that specifc message. Added conversation_message_item layout. Updated ConversationMessageItemAdapter. Added MessageItem object.
+
+[33mcommit 06252b0f96e6b1698759e501f44681e7e13a0369[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Wed Mar 11 17:36:59 2015 -0400
+
+    Added list_selector drawable for touch feedback on conversation items
+
+[33mcommit 09154727999af8bfe85a006b02e9be0ad021d711[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Wed Mar 11 17:23:58 2015 -0400
+
+    Added conversation items to drawerlayout in ConversationActivity
+
+[33mcommit 228d5539d50daae8922db8611e85faccee7b047c[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Wed Mar 11 00:55:33 2015 -0400
+
+    Added navigation item for drawerlayout
+
+[33mcommit 39a047c5ecbb35d8fa510924d128e8f7c7d12123[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Tue Mar 10 23:45:14 2015 -0400
+
+    Added drawerlayout to ConversationActivity
+
+[33mcommit 90a80647b2cb7dcf775569f8352b599ff85e5e88[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Tue Mar 10 23:20:08 2015 -0400
+
+    Added ConversationActivity along with its item adapter. Modified the manifest to make this activity a child of MainActivity. Added toolbar icons for ConversationActivity.
+
+[33mcommit 9d25e5ded73578598bcde4ef77c7ad11b2451f82[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 04:36:28 2015 -0400
+
+    Tested layout with fake data
+
+[33mcommit 5437a5af3f2fb21b39273be5fe7f6efe066c12ee[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 03:09:34 2015 -0400
+
+    Added BlocTalkApplication and DataSource class
+
+[33mcommit be7511e3954e5b6ca9492cb44b4c770029177eab[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 01:52:13 2015 -0500
+
+    Added recyclerview
+
+[33mcommit 87ef1afd58e23f3fe6165baf42f3b0f56843ad2b[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 01:33:29 2015 -0500
+
+    Added toolbar logo and action icon.
+
+[33mcommit 8bc726a4c3aab41e97d2d32bfcc26fb70dc75a5b[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 01:13:51 2015 -0500
+
+    Added MainActivity with toolbar
+
+[33mcommit 6cd1601b3ae566ca99690cd781a24e313ac370f3[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Mar 8 01:03:56 2015 -0500
+
+    Added read sms permission to android manifest
+
+[33mcommit 8ba75f01f54861ed7975a5b082c60840e403af4e[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Mar 7 19:39:30 2015 -0500
+
+    Initial commit

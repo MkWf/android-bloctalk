@@ -55,7 +55,7 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
             RelativeLayout.LayoutParams
                     lpSender = (RelativeLayout.LayoutParams)sender.getLayoutParams();
 
-            if(messageItem.getSender() == MessageItem.OUTGOING_MSG){
+            if(messageItem.getType() == MessageItem.OUTGOING_MSG){
                 lpBody.addRule(RelativeLayout.LEFT_OF, sender.getId());
 
                 lpSender.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
