@@ -61,7 +61,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         int id = intent.getIntExtra("id", -1);
         String name = intent.getStringExtra("name");
 
-        BlocTalkApplication.getSharedDataSource().queryForMessages(this, id);
+        BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 20);
 
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);

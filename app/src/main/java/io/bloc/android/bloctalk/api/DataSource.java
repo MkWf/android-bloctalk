@@ -147,16 +147,34 @@ public class DataSource {
 
             }
         }
-        //String body = cursor.getString(cursor.getColumnIndex("body"));
+    }
 
-        //String selection = Telephony.MmsSms.TYPE_DISCRIMINATOR_COLUMN + " = ? AND "
-              //  + Telephony.TextBasedSmsColumns.THREAD_ID + " = ?";
-        //String [] selectionArgs = new String[] {String.valueOf(Telephony.MmsSms.SMS_PROTO), String.valueOf(threadId)};
-       // Cursor conversation = context.getContentResolver().query(conversationUri, null, null, null, null);
+    public void queryForMessages(Context context, int id, int offset, int limit){
+        if(messages.size() > 0){
+            messages.clear();
+        }
 
-       // if(conversation.getCount() > 0){
-       //     dumpCursor(conversation);
-        //}
+        String selection = "thread_id = "+id;
+        Uri conversationUri = Uri.parse("content://sms//");
+        Cursor cursor = context.getContentResolver().query(conversationUri, null, selection, null, "_id ASC limit " + limit + " offset " + offset);
+
+        if(cursor.getCount() > 0){
+            dumpCursor(cursor);
+
+            cursor.moveToFirst();
+
+            for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
+                //String msgId = cursor.getString(cursor.getColumnIndexOrThrow("thread_id"));
+                String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
+                int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
+                int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow("date_sent"));
+                messages.add(new MessageItem(body, read, sender, time));
+
+                BlocTalkApplication.getSharedDataSource().setCurrentRecipient(cursor.getString(cursor.getColumnIndexOrThrow("address")));
+
+            }
+        }
     }
 
     public void updateMsgReadStatus(String msgId){
