@@ -77,7 +77,11 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         convoMsgItemAdapter = new ConversationMessageItemAdapter();
         recyclerView = (RecyclerView) findViewById(R.id.rv_activity_conversation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());  //may set to null later on
+        recyclerView.setItemAnimator(new DefaultItemAnimator()); 
+        //recyclerView.setVerticalScrollBarEnabled(true);
+       // recyclerView.setScrollbarFadingEnabled(false);
+        //recyclerView.setScrollBarSize(5);
+        recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         recyclerView.setAdapter(convoMsgItemAdapter);
 
         convoNavigationAdapter = new ConversationNavigationAdapter();

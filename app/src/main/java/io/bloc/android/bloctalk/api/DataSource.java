@@ -66,6 +66,7 @@ public class DataSource {
             int unreadMsgCount=0;
             String photo;
             Uri photoURI = null;
+            String emailOrPhone = "";
 
             for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
                 id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
@@ -81,7 +82,7 @@ public class DataSource {
                         Log.i("Split", "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ADDRESSES");
                         dumpCursor(address);
 
-                        String emailOrPhone = address.getString(address.getColumnIndexOrThrow("address"));
+                        emailOrPhone = address.getString(address.getColumnIndexOrThrow("address"));
 
                         Log.i("Split", "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$CONTACTINFO");
                         if(emailOrPhone.contains("@")){
@@ -115,7 +116,7 @@ public class DataSource {
                         }
                     }
                 }
-                conversations.add(new ConversationItem(id, name, photoURI, unreadMsgCount));
+                conversations.add(new ConversationItem(id, name, photoURI, emailOrPhone, unreadMsgCount));
             }
         }
     }

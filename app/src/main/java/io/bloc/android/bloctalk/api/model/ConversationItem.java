@@ -7,14 +7,16 @@ import android.net.Uri;
  */
 public class ConversationItem {
     int id;
+    String address;
     String name;
     Uri photo;
     int unreadMsgCount;
 
-    public ConversationItem(int id, String name, Uri photo, int unreadMsgCount){
+    public ConversationItem(int id, String name, Uri photo, String address, int unreadMsgCount){
         setId(id);
         setName(name);
         setPhoto(photo);
+        setAddress(address);
         setUnreadMsgCount(unreadMsgCount);
     }
 
@@ -24,7 +26,11 @@ public class ConversationItem {
     }
     public Uri getPhoto() { return photo; }
     public int getUnreadMsgCount() { return unreadMsgCount;}
+    public String getAddress(){
+        return address;
+    }
 
+    public void setAddress(String Address){ this.address = address; }
     public void setId(int id) { this.id = id; }
     public void setName(String name){
         this.name = name;
