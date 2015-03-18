@@ -1,5 +1,7 @@
 package io.bloc.android.bloctalk.receivers;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
+import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.api.model.MessageItem;
 import io.bloc.android.bloctalk.ui.activities.ConversationActivity;
 import io.bloc.android.bloctalk.ui.activities.MainActivity;
@@ -38,18 +41,12 @@ public class SmsReceiver extends BroadcastReceiver {
                 for(SmsMessage message : messages){
                     sender = message.getDisplayOriginatingAddress();
                     msg = message.getDisplayMessageBody();
-                    boolean isEmail = message.isEmail();
-                    byte[] data = message.getUserData();
                     time = message.getTimestampMillis();
-                    int icc = message.getIndexOnIcc();
-                    int icc2 = message.getStatusOnIcc();
 
                     Uri conversationUri = Uri.parse("content://sms//");
                     Cursor cursor = context.getContentResolver().query(conversationUri, null, Telephony.Sms.ADDRESS + "= ?", new String[]{sender}, null);
 
                     if(cursor.getCount() > 0){
-                        //cursor.moveToFirst();
-                        //String a = cursor.getString(cursor.getColumnIndexOrThrow("address"));
                         ContentValues values = new ContentValues();
 
                         values.put(Telephony.Sms.ADDRESS, sender);
@@ -69,27 +66,26 @@ public class SmsReceiver extends BroadcastReceiver {
                     }
                 }
 
-                if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient() != null && BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)){
+                if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient() != null && BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)) {
                     BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, MessageItem.READ_MSG, MessageItem.INCOMING_MSG, Long.toString(time)));
-                    ConversationActivity ca = (ConversationActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
+                    ConversationActivity ca = (ConversationActivity) BlocTalkApplication.getSharedInstance().getCurrentActivity();
                     ca.notifyAdapter();
                 }else{
-                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, MessageItem.UNREAD_MSG, MessageItem.INCOMING_MSG, Long.toString(time)));
-
                     BlocTalkApplication.getSharedDataSource().query(context);
 
                     MainActivity ma = (MainActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
                     ma.notifyAdapter();
+
+                    BlocTalkApplication.getSharedDataSource().query(context);
+                    Notification.Builder noti = new Notification.Builder(context)
+                            .setContentTitle("Message from: " + sender)
+                            .setContentText(msg + "\n\n" + time)
+                            .setSmallIcon(R.mipmap.conversation_item_user)
+                            .setAutoCancel(true);
+
+                    NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(0, noti.build());
                 }
-
-                /*Notification.Builder noti = new Notification.Builder(context)
-                        .setContentTitle("New Message from")
-                        .setContentText(sender + "\n" + msg + "\n" + Boolean.toString(isEmail) + "\n" + data.toString() + "\n" + Long.toString(time)
-                                + "\n" + Integer.toString(icc) +  "\n" + Integer.toString(icc2))
-                        .setSmallIcon(R.mipmap.conversation_item_user);
-
-                NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-                notificationManager.notify(Integer.parseInt(sender), noti.build());*/
             }
         }
     }
