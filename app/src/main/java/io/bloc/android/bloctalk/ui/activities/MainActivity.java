@@ -78,9 +78,11 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
     protected void onResume() {
         super.onResume();
         BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
+        BlocTalkApplication.getSharedDataSource().query(this);
+        convoItemAdapter.notifyDataSetChanged();
     }
 
     public void notifyAdapter(){
-
+        convoItemAdapter.notifyDataSetChanged();
     }
 }

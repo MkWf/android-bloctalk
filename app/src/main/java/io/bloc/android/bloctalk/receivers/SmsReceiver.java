@@ -12,6 +12,7 @@ import android.telephony.SmsMessage;
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.api.model.MessageItem;
 import io.bloc.android.bloctalk.ui.activities.ConversationActivity;
+import io.bloc.android.bloctalk.ui.activities.MainActivity;
 
 import static android.provider.Telephony.Sms.Intents.getMessagesFromIntent;
 
@@ -29,7 +30,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
         String sender="";
         String msg="";
-        long time;
+        long time=0;
 
 
         if(action.equals(ACTION_SMS_RECEIVED) || action.equals(ACTION_SMS_DELIVER)){
@@ -55,19 +56,41 @@ public class SmsReceiver extends BroadcastReceiver {
                         values.put(Telephony.Sms.ADDRESS, sender);
                         values.put(Telephony.Sms.TYPE, MessageItem.INCOMING_MSG);
                         values.put(Telephony.Sms.BODY, msg);
-                        values.put(Telephony.Sms.DATE_SENT, time);
+                        values.put(Telephony.Sms.DATE_SENT, Long.toString(time));
+
+                        if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient() != null && BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)){
+                            values.put(Telephony.Sms.READ, Integer.toString(MessageItem.READ_MSG));
+                        }else{
+                            values.put(Telephony.Sms.READ, Integer.toString((MessageItem.UNREAD_MSG)));
+                        }
+
                         context.getContentResolver().insert(
                                 Telephony.Sms.CONTENT_URI,
                                 values);
                     }
                 }
 
-                if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)){
-                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, 0, MessageItem.INCOMING_MSG));
+                if(BlocTalkApplication.getSharedDataSource().getCurrentRecipient() != null && BlocTalkApplication.getSharedDataSource().getCurrentRecipient().equals(sender)){
+                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, MessageItem.READ_MSG, MessageItem.INCOMING_MSG, Long.toString(time)));
                     ConversationActivity ca = (ConversationActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
                     ca.notifyAdapter();
+                }else{
+                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, MessageItem.UNREAD_MSG, MessageItem.INCOMING_MSG, Long.toString(time)));
+
+                    BlocTalkApplication.getSharedDataSource().query(context);
+
+                    MainActivity ma = (MainActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
+                    ma.notifyAdapter();
                 }
 
+                /*Notification.Builder noti = new Notification.Builder(context)
+                        .setContentTitle("New Message from")
+                        .setContentText(sender + "\n" + msg + "\n" + Boolean.toString(isEmail) + "\n" + data.toString() + "\n" + Long.toString(time)
+                                + "\n" + Integer.toString(icc) +  "\n" + Integer.toString(icc2))
+                        .setSmallIcon(R.mipmap.conversation_item_user);
+
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+                notificationManager.notify(Integer.parseInt(sender), noti.build());*/
             }
         }
     }

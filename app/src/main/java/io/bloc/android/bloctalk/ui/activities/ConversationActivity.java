@@ -3,11 +3,14 @@ package io.bloc.android.bloctalk.ui.activities;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,10 +26,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.adapters.ConversationMessageItemAdapter;
 import io.bloc.android.bloctalk.adapters.ConversationNavigationAdapter;
+import io.bloc.android.bloctalk.api.model.MessageItem;
 
 /**
  * Created by Mark on 3/10/2015.
@@ -114,15 +121,34 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        BlocTalkApplication.getSharedDataSource().query(this);
+        //BlocTalkApplication.getSharedDataSource().query(this);
+
+        String recipient = BlocTalkApplication.getSharedDataSource().getCurrentRecipient();
+        BlocTalkApplication.getSharedDataSource().setCurrentRecipient(null);
+
+        ContentValues values = new ContentValues();
+        values.put(Telephony.Sms.READ, MessageItem.READ_MSG);
+
+        Uri conversationUri = Uri.parse("content://sms//");
+        getContentResolver().update(conversationUri, values, Telephony.Sms.ADDRESS + "= ?", new String[]{recipient});
     }
 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.activity_conversation_message_send_button:
-                String userMsg = message.getText().toString();
+                final String userMsg = message.getText().toString();
                 message.setText("");
+
+                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+                formatter.setLenient(false);
+
+                Date curDate = new Date();
+                final long curMillis = curDate.getTime();
+                String curTime = formatter.format(curDate);
+
+                BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
+                convoMsgItemAdapter.notifyDataSetChanged();
 
                 String SENT = "SMS_SENT";
                 String DELIVERED = "SMS_DELIVERED";
@@ -139,6 +165,21 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                             case Activity.RESULT_OK:
                                 Toast.makeText(getBaseContext(), "SMS sent",
                                         Toast.LENGTH_SHORT).show();
+
+                                ContentValues values = new ContentValues();
+
+                                values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
+                                values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
+                                values.put(Telephony.Sms.BODY, userMsg);
+                                values.put(Telephony.Sms.DATE_SENT, curMillis);
+                                getContentResolver().insert(
+                                        Telephony.Sms.CONTENT_URI,
+                                        values);
+
+                                BlocTalkApplication.getSharedDataSource().getMsgs().get(BlocTalkApplication.getSharedDataSource().getMsgs().size()-1).setTime(Long.toString(curMillis));
+                                convoMsgItemAdapter.notifyDataSetChanged();
+
+
                                 break;
                             case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                                 Toast.makeText(getBaseContext(), "Generic failure",
@@ -189,7 +230,13 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
     }
 
+    protected void onStop() {
+        super.onStop();
+        //unregisterReceiver
+    }
+
     public void notifyAdapter() {
         convoMsgItemAdapter.notifyDataSetChanged();
     }
+
 }

@@ -46,15 +46,9 @@ public class DataSource {
 
     public void query(Context context){
 
-       // ContentValues values = new ContentValues();
-
-      //  values.put(Telephony.Sms)
-     //   values.put(Telephony.Sms.Conversations.BODY, "Hello?");
-       // values.put(Telephony.Sms.Conversations.TYPE, MessageItem.OUTGOING_MSG);
-
-     //   Uri rawContactUri = context.getContentResolver().insert(Telephony.Sms.Inbox.CONTENT_URI, values);
-
-        //long rawContactId = ContentUris.parseId(rawContactUri);
+        if(conversations.size() > 0){
+            conversations.clear();
+        }
         Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
 
         final String[] projection = new String[]{"*"};
@@ -145,7 +139,8 @@ public class DataSource {
                 String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
                 int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
                 int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
-                messages.add(new MessageItem(body, read, sender));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow("date_sent"));
+                messages.add(new MessageItem(body, read, sender, time));
 
                 BlocTalkApplication.getSharedDataSource().setCurrentRecipient(cursor.getString(cursor.getColumnIndexOrThrow("address")));
 
@@ -167,7 +162,7 @@ public class DataSource {
         Context context = BlocTalkApplication.getSharedInstance();
 
         ContentValues values = new ContentValues();
-        values.put(Telephony.Sms.READ, "1");
+        values.put(Telephony.Sms.READ, MessageItem.READ_MSG);
 
         Uri conversationUri = Uri.parse("content://sms//");
         context.getContentResolver().update(conversationUri, values, Telephony.Sms._ID + "= ?", new String[]{msgId});

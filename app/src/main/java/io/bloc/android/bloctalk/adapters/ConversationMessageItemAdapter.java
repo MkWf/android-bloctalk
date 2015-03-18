@@ -5,13 +5,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
 import io.bloc.android.bloctalk.api.DataSource;
 import io.bloc.android.bloctalk.api.model.MessageItem;
+
+import static java.text.DateFormat.SHORT;
+import static java.text.DateFormat.getDateTimeInstance;
 
 /**
  * Created by Mark on 3/10/2015.
@@ -37,15 +44,19 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView body;
+        TextView timestamp;
         ImageView sender;
         MessageItem item;
+        ProgressBar progressBar;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
 
             body = (TextView) itemView.findViewById(R.id.conversation_message_item_body);
             sender = (ImageView) itemView.findViewById(R.id.conversation_message_item_sender_indicator);
+            timestamp = (TextView) itemView.findViewById(R.id.conversation_message_item_sender_timestamp);
         }
+
 
         void update(MessageItem messageItem){
             item = messageItem;
@@ -54,20 +65,25 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
                     lpBody = (RelativeLayout.LayoutParams)body.getLayoutParams();
             RelativeLayout.LayoutParams
                     lpSender = (RelativeLayout.LayoutParams)sender.getLayoutParams();
+            RelativeLayout.LayoutParams
+                    lpTime = (RelativeLayout.LayoutParams)timestamp.getLayoutParams();
 
             if(messageItem.getType() == MessageItem.OUTGOING_MSG){
                 lpBody.addRule(RelativeLayout.LEFT_OF, sender.getId());
 
                 lpSender.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                lpTime.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
                 sender.setImageResource(R.mipmap.conversation_message_item_outgoing);
             }else{
                 lpBody.addRule(RelativeLayout.RIGHT_OF, sender.getId());
 
                 lpSender.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                lpTime.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 
                 if(messageItem.getRead() == 0){
                     sender.setImageResource(R.mipmap.conversation_message_item_incoming_unread);
-                    BlocTalkApplication.getSharedDataSource().updateMsgReadStatus(messageItem.getId());
+                    //BlocTalkApplication.getSharedDataSource().updateMsgReadStatus(messageItem.getId());
                 }
                 else{
                     sender.setImageResource(R.mipmap.conversation_message_item_incoming);
@@ -79,6 +95,22 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
 
             body.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             sender.getLayoutParams().height = body.getMeasuredHeight() + 10;
+            sender.setLayoutParams(lpSender);
+
+            timestamp.setLayoutParams(lpTime);
+
+
+            if(messageItem.getTime().equals("Sending...")){
+                //Do nothing
+            }else{
+                DateFormat formatter = getDateTimeInstance(SHORT, SHORT);
+                formatter.setLenient(false);
+
+                Date date = new Date(Long.parseLong(messageItem.getTime()));
+                formatter.format(date);
+
+                timestamp.setText(date.toString());
+            }
         }
 
         @Override
