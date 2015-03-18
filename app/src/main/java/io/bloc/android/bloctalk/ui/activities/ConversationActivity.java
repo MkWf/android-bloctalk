@@ -62,7 +62,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         String name = intent.getStringExtra("name");
 
         BlocTalkApplication.getSharedDataSource().queryForMessages(this, id);
-        //recyclerView.scrollToPosition();
+
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
         toolbar.setLogo(R.mipmap.ic_app_logo);
@@ -77,12 +77,14 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         convoMsgItemAdapter = new ConversationMessageItemAdapter();
         recyclerView = (RecyclerView) findViewById(R.id.rv_activity_conversation);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator()); 
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         //recyclerView.setVerticalScrollBarEnabled(true);
        // recyclerView.setScrollbarFadingEnabled(false);
         //recyclerView.setScrollBarSize(5);
         recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         recyclerView.setAdapter(convoMsgItemAdapter);
+
+        recyclerView.scrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
 
         convoNavigationAdapter = new ConversationNavigationAdapter();
         navigationRecyclerView = (RecyclerView) findViewById(R.id.rv_nav_activity_conversation);
@@ -153,6 +155,8 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
 
                 BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
                 convoMsgItemAdapter.notifyDataSetChanged();
+
+                recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
 
                 String SENT = "SMS_SENT";
                 String DELIVERED = "SMS_DELIVERED";
@@ -242,5 +246,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     public void notifyAdapter() {
         convoMsgItemAdapter.notifyDataSetChanged();
     }
+
+    public RecyclerView getRecyclerView() { return recyclerView; }
 
 }
