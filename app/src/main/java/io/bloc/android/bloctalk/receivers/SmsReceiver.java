@@ -32,8 +32,7 @@ public class SmsReceiver extends BroadcastReceiver {
         String msg="";
         long time=0;
 
-
-        if(action.equals(ACTION_SMS_RECEIVED) || action.equals(ACTION_SMS_DELIVER)){
+        if(action.equals(ACTION_SMS_DELIVER)){
             SmsMessage[] messages = getMessagesFromIntent(intent);
             if (messages != null) {
                 for(SmsMessage message : messages){
