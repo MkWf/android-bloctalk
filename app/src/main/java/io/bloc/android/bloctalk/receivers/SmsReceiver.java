@@ -70,17 +70,18 @@ public class SmsReceiver extends BroadcastReceiver {
                     BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(msg, MessageItem.READ_MSG, MessageItem.INCOMING_MSG, Long.toString(time)));
                     ConversationActivity ca = (ConversationActivity) BlocTalkApplication.getSharedInstance().getCurrentActivity();
                     ca.notifyAdapter();
+
+                    ca.getRecyclerView().smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
                 }else{
                     BlocTalkApplication.getSharedDataSource().query(context);
 
                     MainActivity ma = (MainActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
                     ma.notifyAdapter();
 
-                    BlocTalkApplication.getSharedDataSource().query(context);
                     Notification.Builder noti = new Notification.Builder(context)
                             .setContentTitle("Message from: " + sender)
                             .setContentText(msg + "\n\n" + time)
-                            .setSmallIcon(R.mipmap.conversation_item_user)
+                            .setSmallIcon(R.mipmap.conversation_item_user_notification)
                             .setAutoCancel(true);
 
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
