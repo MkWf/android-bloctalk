@@ -11,13 +11,15 @@
     <ImageView
         android:id="@+id/conversation_message_item_sender_indicator"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"/>
 
     <TextView
         android:id="@+id/conversation_message_item_sender_timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/conversation_message_item_body"
-        android:text="Sending..."/>
+        android:layout_below="@id/conversation_message_item_sender_indicator"
+        android:text="Sending..."
+        android:layout_marginBottom="10dp"/>
 
 </RelativeLayout>
