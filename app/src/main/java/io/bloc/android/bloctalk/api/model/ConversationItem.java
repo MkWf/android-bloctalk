@@ -30,7 +30,7 @@ public class ConversationItem {
         return address;
     }
 
-    public void setAddress(String Address){ this.address = address; }
+    public void setAddress(String address){ this.address = address; }
     public void setId(int id) { this.id = id; }
     public void setName(String name){
         this.name = name;

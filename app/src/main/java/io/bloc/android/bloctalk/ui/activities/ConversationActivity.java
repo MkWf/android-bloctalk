@@ -58,10 +58,15 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
 
         Intent intent = getIntent();
+        int notifId = intent.getIntExtra("notifId", -1);
         int id = intent.getIntExtra("id", -1);
         String name = intent.getStringExtra("name");
 
-        BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 20);
+        if(notifId != -1){
+            BlocTalkApplication.getSharedDataSource().queryForMessages(this, notifId, 0, 20);
+        }else{
+            BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 20);
+        }
 
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
@@ -84,7 +89,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         recyclerView.setAdapter(convoMsgItemAdapter);
 
-        recyclerView.scrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
+        //recyclerView.scrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
 
         convoNavigationAdapter = new ConversationNavigationAdapter();
         navigationRecyclerView = (RecyclerView) findViewById(R.id.rv_nav_activity_conversation);

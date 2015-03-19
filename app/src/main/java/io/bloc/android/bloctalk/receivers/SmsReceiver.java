@@ -2,6 +2,7 @@ package io.bloc.android.bloctalk.receivers;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,8 +12,12 @@ import android.net.Uri;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
+import io.bloc.android.bloctalk.api.model.ConversationItem;
 import io.bloc.android.bloctalk.api.model.MessageItem;
 import io.bloc.android.bloctalk.ui.activities.ConversationActivity;
 import io.bloc.android.bloctalk.ui.activities.MainActivity;
@@ -76,16 +81,48 @@ public class SmsReceiver extends BroadcastReceiver {
                     BlocTalkApplication.getSharedDataSource().query(context);
 
                     MainActivity ma = (MainActivity)BlocTalkApplication.getSharedInstance().getCurrentActivity();
-                    ma.notifyAdapter();
+
+                    if(ma != null){
+                        ma.notifyAdapter();
+                    }
+
+
+
+                    int userIdforIntent = -1;
+
+                    List<ConversationItem> convos = BlocTalkApplication.getSharedDataSource().getConvos();
+                    for(int i = 0; i < convos.size(); i++){
+                        if(convos.get(i).getAddress().equals(sender)){
+                            userIdforIntent = convos.get(i).getId();
+                        }
+                    }
+
+                    Intent resultIntent = new Intent(context, ConversationActivity.class);
+                    resultIntent.putExtra("notifId", userIdforIntent);
+
+                    PendingIntent resultPendingIntent =
+                            PendingIntent.getActivity(
+                                    context,
+                                    0,
+                                    resultIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                            );
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("MM.dd.yyyy, HH:mm");
+                    formatter.setLenient(false);
+
+                    String timeDayHr = formatter.format(time);
 
                     Notification.Builder noti = new Notification.Builder(context)
                             .setContentTitle("Message from: " + sender)
-                            .setContentText(msg + "\n\n" + time)
-                            .setSmallIcon(R.mipmap.conversation_item_user_notification)
-                            .setAutoCancel(true);
+                            .setContentText(msg + "\n\n" + timeDayHr)
+                            .setContentIntent(resultPendingIntent)
+                            .setSmallIcon(R.mipmap.conversation_item_user_notification);
+                           // .setStyle(new Notification.BigTextStyle().bigText(msg))
+                           // .setAutoCancel(false);
 
                     NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-                    notificationManager.notify(0, noti.build());
+                    notificationManager.notify(userIdforIntent, noti.build());
                 }
             }
         }
