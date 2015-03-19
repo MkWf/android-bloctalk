@@ -3,23 +3,72 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/conversation_message_item_body"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:id="@+id/rl_conversation_msg_item_incoming"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/conversation_message_item_sender_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"/>
+        <TextView
+            android:id="@+id/conversation_message_item_body_incoming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
 
-    <TextView
-        android:id="@+id/conversation_message_item_sender_timestamp"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/conversation_message_item_indicator_incoming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/conversation_message_item_timestamp_incoming"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/conversation_message_item_indicator_incoming"
+            android:text="Sending..."
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_conversation_msg_item_outgoing"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/conversation_message_item_sender_indicator"
-        android:text="Sending..."
-        android:layout_marginBottom="10dp"/>
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/conversation_message_item_body_outgoing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/conversation_message_item_indicator_outgoing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/conversation_message_item_timestamp_outgoing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/conversation_message_item_indicator_outgoing"
+            android:text="Sending..."
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"/>
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

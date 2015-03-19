@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -43,62 +42,71 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
 
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        TextView body;
-        TextView timestamp;
-        ImageView sender;
+        TextView bodyIn;
+        TextView timestampIn;
+        ImageView senderIn;
+
+        TextView bodyOut;
+        TextView timestampOut;
+        ImageView senderOut;
+
+        RelativeLayout rlIn;
+        RelativeLayout rlOut;
+
         MessageItem item;
-        ProgressBar progressBar;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
 
-            body = (TextView) itemView.findViewById(R.id.conversation_message_item_body);
-            sender = (ImageView) itemView.findViewById(R.id.conversation_message_item_sender_indicator);
-            timestamp = (TextView) itemView.findViewById(R.id.conversation_message_item_sender_timestamp);
+            bodyIn = (TextView) itemView.findViewById(R.id.conversation_message_item_body_incoming);
+            senderIn = (ImageView) itemView.findViewById(R.id.conversation_message_item_indicator_incoming);
+            timestampIn = (TextView) itemView.findViewById(R.id.conversation_message_item_timestamp_incoming);
+
+            bodyOut = (TextView) itemView.findViewById(R.id.conversation_message_item_body_outgoing);
+            senderOut = (ImageView) itemView.findViewById(R.id.conversation_message_item_indicator_outgoing);
+            timestampOut = (TextView) itemView.findViewById(R.id.conversation_message_item_timestamp_outgoing);
+
+            rlIn = (RelativeLayout) itemView.findViewById(R.id.rl_conversation_msg_item_incoming);
+            rlOut = (RelativeLayout) itemView.findViewById(R.id.rl_conversation_msg_item_outgoing);
         }
+
 
 
         void update(MessageItem messageItem){
             item = messageItem;
 
-            RelativeLayout.LayoutParams
-                    lpBody = (RelativeLayout.LayoutParams)body.getLayoutParams();
-            RelativeLayout.LayoutParams
-                    lpSender = (RelativeLayout.LayoutParams)sender.getLayoutParams();
-            RelativeLayout.LayoutParams
-                    lpTime = (RelativeLayout.LayoutParams)timestamp.getLayoutParams();
-
             if(messageItem.getType() == MessageItem.OUTGOING_MSG){
-                lpBody.addRule(RelativeLayout.LEFT_OF, sender.getId());
+                rlIn.setVisibility(View.GONE);
+                rlOut.setVisibility(View.VISIBLE);
 
-                lpSender.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                lpTime.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                RelativeLayout.LayoutParams lpSenderOut = (RelativeLayout.LayoutParams)senderOut.getLayoutParams();
 
-                sender.setImageResource(R.mipmap.conversation_message_item_outgoing);
+                senderOut.setImageResource(R.mipmap.conversation_message_item_outgoing);
+
+                bodyOut.setText(messageItem.getBody());
+
+                bodyOut.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                senderOut.getLayoutParams().height = bodyOut.getMeasuredHeight() + 10;
+                senderOut.setLayoutParams(lpSenderOut);
             }else{
-                lpBody.addRule(RelativeLayout.RIGHT_OF, sender.getId());
+                rlIn.setVisibility(View.VISIBLE);
+                rlOut.setVisibility(View.GONE);
 
-                lpSender.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                lpTime.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                RelativeLayout.LayoutParams lpSenderIn = (RelativeLayout.LayoutParams)senderIn.getLayoutParams();
+
+                bodyIn.setText(messageItem.getBody());
+
+                bodyIn.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                senderIn.getLayoutParams().height = bodyIn.getMeasuredHeight() + 10;
+                senderIn.setLayoutParams(lpSenderIn);
 
                 if(messageItem.getRead() == 0){
-                    sender.setImageResource(R.mipmap.conversation_message_item_incoming_unread);
-                    //BlocTalkApplication.getSharedDataSource().updateMsgReadStatus(messageItem.getId());
+                    senderIn.setImageResource(R.mipmap.conversation_message_item_incoming_unread);
                 }
                 else{
-                    sender.setImageResource(R.mipmap.conversation_message_item_incoming);
+                    senderIn.setImageResource(R.mipmap.conversation_message_item_incoming);
                 }
             }
-
-            body.setText(messageItem.getBody());
-            body.setLayoutParams(lpBody);
-
-            body.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            sender.getLayoutParams().height = body.getMeasuredHeight() + 10;
-            sender.setLayoutParams(lpSender);
-
-            timestamp.setLayoutParams(lpTime);
-
 
             if(messageItem.getTime().equals("Sending...")){
                 //Do nothing
@@ -109,7 +117,8 @@ public class ConversationMessageItemAdapter extends RecyclerView.Adapter<Convers
                 Date date = new Date(Long.parseLong(messageItem.getTime()));
                 formatter.format(date);
 
-                timestamp.setText(date.toString());
+                timestampIn.setText(date.toString());
+                timestampOut.setText(date.toString());
             }
         }
 
