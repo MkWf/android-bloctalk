@@ -49,6 +49,22 @@ public class DataSource {
         if(conversations.size() > 0){
             conversations.clear();
         }
+
+        /*ContentValues values = new ContentValues();
+
+        values.put(ContactsContract.Contacts.HAS_PHONE_NUMBER, 1);
+
+
+        context.getContentResolver().insert(
+                ContactsContract.Contacts.CONTENT_URI,
+                values);*/
+
+
+
+        //Cursor contactInfo2 = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, ContactsContract.Contacts.HAS_PHONE_NUMBER + "= ?", new String[]{"1"}, null);
+        //dumpCursor(contactInfo2);
+
+
         Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
 
         final String[] projection = new String[]{"*"};
@@ -91,9 +107,6 @@ public class DataSource {
                                     Uri.encode(emailOrPhone));
                             Cursor contactInfo = context.getContentResolver().query(lookupByEmail, null, null, null, null);
                             dumpCursor(contactInfo);
-                        }
-                        else if(emailOrPhone.equals("")){
-                            name = "Anonymous";
                         }else{
                             Uri lookupByPhone = Uri.withAppendedPath(
                                     ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
@@ -112,6 +125,8 @@ public class DataSource {
                                 else{
                                     photoURI = null;
                                 }
+                            }else{
+                                name = emailOrPhone;
                             }
                         }
                     }
