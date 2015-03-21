@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_question"
+    <item android:id="@+id/action_start_convo"
         android:icon="@mipmap/ic_action_edit_convo"
         android:title="@string/edit_conversation"
         android:orderInCategory="0"
