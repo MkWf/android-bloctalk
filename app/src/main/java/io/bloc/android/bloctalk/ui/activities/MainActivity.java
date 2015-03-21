@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
@@ -60,12 +61,24 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
         return super.onCreateOptionsMenu(menu);
     }
 
+
     @Override
     public void onItemClicked(ConversationItemAdapter itemAdapter, ConversationItem convoItem) {
         Intent intent = new Intent(this, ConversationActivity.class);
         intent.putExtra("id", convoItem.getId());
         intent.putExtra("name", convoItem.getName());
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_start_convo:
+                Intent intent = new Intent(this, ConversationActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
