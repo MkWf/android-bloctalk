@@ -134,6 +134,11 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         textView = (MultiAutoCompleteTextView) findViewById(R.id.multiAutoCompleteTextView1);
         textView.setAdapter(contactadapter);
         textView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
+        if(intent.getIntExtra("newConvo", -1) == 1){
+            textView.setVisibility(View.VISIBLE);
+            textView.requestFocus(1);
+        }
     }
 
     @Override
@@ -337,6 +342,8 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                                     Telephony.Sms.CONTENT_URI,
                                     values);
                         }
+                        Intent intent = new Intent(context, MainActivity.class);
+                        startActivity(intent);
                     }else{
                         values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
                         values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);

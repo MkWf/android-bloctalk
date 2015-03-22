@@ -57,8 +57,8 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="61dp"
             android:ems="14"
-            android:hint="MultiAutoCompleteTextView" >
-
+            android:hint="MultiAutoCompleteTextView"
+            android:visibility="gone">
             <requestFocus />
         </MultiAutoCompleteTextView>
 

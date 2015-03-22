@@ -75,6 +75,7 @@ public class MainActivity extends ActionBarActivity implements ConversationItemA
         switch(item.getItemId()){
             case R.id.action_start_convo:
                 Intent intent = new Intent(this, ConversationActivity.class);
+                intent.putExtra("newConvo", 1);
                 startActivity(intent);
                 break;
         }
