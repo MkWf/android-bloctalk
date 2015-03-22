@@ -50,21 +50,6 @@ public class DataSource {
             conversations.clear();
         }
 
-        /*ContentValues values = new ContentValues();
-
-        values.put(ContactsContract.Contacts.HAS_PHONE_NUMBER, 1);
-
-
-        context.getContentResolver().insert(
-                ContactsContract.Contacts.CONTENT_URI,
-                values);*/
-
-
-
-        //Cursor contactInfo2 = context.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, ContactsContract.Contacts.HAS_PHONE_NUMBER + "= ?", new String[]{"1"}, null);
-        //dumpCursor(contactInfo2);
-
-
         Uri allConversations = Uri.parse("content://mms-sms/conversations/?simple=true");
 
         final String[] projection = new String[]{"*"};
@@ -188,6 +173,28 @@ public class DataSource {
 
                 BlocTalkApplication.getSharedDataSource().setCurrentRecipient(cursor.getString(cursor.getColumnIndexOrThrow("address")));
 
+            }
+        }
+    }
+
+    public void queryForMoreMessages(Context context, int id, int offset, int limit){
+
+        String selection = "thread_id = "+id;
+        Uri conversationUri = Uri.parse("content://sms//");
+        Cursor cursor = context.getContentResolver().query(conversationUri, null, selection, null, "_id ASC limit " + limit + " offset " + offset);
+
+        if(cursor.getCount() > 0){
+            dumpCursor(cursor);
+
+            cursor.moveToFirst();
+
+            for(int i = 0; i<cursor.getCount(); i++, cursor.moveToNext()){
+                //String msgId = cursor.getString(cursor.getColumnIndexOrThrow("thread_id"));
+                String body = cursor.getString(cursor.getColumnIndexOrThrow("body"));
+                int read = cursor.getInt(cursor.getColumnIndexOrThrow("read"));
+                int sender = cursor.getInt(cursor.getColumnIndexOrThrow("type"));
+                String time = cursor.getString(cursor.getColumnIndexOrThrow("date_sent"));
+                messages.add(new MessageItem(body, read, sender, time));
             }
         }
     }

@@ -67,6 +67,12 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     String SENT = "SMS_SENT";
     String DELIVERED = "SMS_DELIVERED";
     List<String> recipients = new ArrayList<>();
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, lastVisibleItem, visibleItemCount, totalItemCount;
+    LinearLayoutManager mLayoutManager;
+    int id;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -84,13 +90,14 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
 
         Intent intent = getIntent();
         int notifId = intent.getIntExtra("notifId", -1);
-        int id = intent.getIntExtra("id", -1);
+        id = intent.getIntExtra("id", -1);
         String name = intent.getStringExtra("name");
 
         if(notifId != -1){
-            BlocTalkApplication.getSharedDataSource().queryForMessages(this, notifId, 0, 20);
+            BlocTalkApplication.getSharedDataSource().queryForMessages(this, notifId);
+            recyclerView.scrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
         }else{
-            BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 20);
+            BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 10);
         }
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
@@ -105,7 +112,8 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
 
         convoMsgItemAdapter = new ConversationMessageItemAdapter();
         recyclerView = (RecyclerView) findViewById(R.id.rv_activity_conversation);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         //recyclerView.setVerticalScrollBarEnabled(true);
        // recyclerView.setScrollbarFadingEnabled(false);
@@ -113,7 +121,25 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         recyclerView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         recyclerView.setAdapter(convoMsgItemAdapter);
 
-        //recyclerView.scrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                totalItemCount = mLayoutManager.getItemCount();
+                lastVisibleItem = mLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
+
+                if(totalItemCount == lastVisibleItem){
+                    Toast.makeText(getBaseContext(), "Loading more messages",
+                            Toast.LENGTH_SHORT).show();
+
+                    BlocTalkApplication.getSharedDataSource().queryForMoreMessages(ConversationActivity.this, id, BlocTalkApplication.getSharedDataSource().getMsgs().size(), 5);
+                    convoMsgItemAdapter.notifyDataSetChanged();
+
+                }
+            }
+        });
 
         convoNavigationAdapter = new ConversationNavigationAdapter();
         navigationRecyclerView = (RecyclerView) findViewById(R.id.rv_nav_activity_conversation);
@@ -344,6 +370,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                         }
                         Intent intent = new Intent(context, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     }else{
                         values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
                         values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
