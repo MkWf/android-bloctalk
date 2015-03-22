@@ -22,7 +22,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,9 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
@@ -61,12 +58,25 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     private EditText message;
     private Button sendButton;
     private MultiAutoCompleteTextView textView;
+    String userMsg;
+    private BroadcastReceiver sentReceiver;
+    private BroadcastReceiver deliverReceiver;
+    String SENT = "SMS_SENT";
+    String DELIVERED = "SMS_DELIVERED";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+
+
+
+        sentReceiver = new sentReceiver();
+        deliverReceiver = new deliverReceiver();
+
+        registerReceiver(sentReceiver,new IntentFilter(SENT));
+        registerReceiver(deliverReceiver, new IntentFilter(DELIVERED));
 
         BlocTalkApplication.getSharedInstance().setCurrentActivity(this);
 
@@ -80,7 +90,6 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         }else{
             BlocTalkApplication.getSharedDataSource().queryForMessages(this, id, 0, 20);
         }
-
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_conversation);
         toolbar.setLogo(R.mipmap.ic_app_logo);
@@ -170,194 +179,19 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.activity_conversation_message_send_button:
-                final String userMsg = message.getText().toString();
+                userMsg = message.getText().toString();
                 message.setText("");
 
-                if((textView.getText().toString().equals(""))){
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
-                    formatter.setLenient(false);
+                BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
+                convoMsgItemAdapter.notifyDataSetChanged();
 
-                    Date curDate = new Date();
-                    final long curMillis = curDate.getTime();
-                    String curTime = formatter.format(curDate);
+                recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
 
-                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
-                    convoMsgItemAdapter.notifyDataSetChanged();
+                PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
+                PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,new Intent(DELIVERED), 0);
 
-                    recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
-
-                    String SENT = "SMS_SENT";
-                    String DELIVERED = "SMS_DELIVERED";
-
-                    PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
-                    PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,new Intent(DELIVERED), 0);
-
-                    //---when the SMS has been sent---
-                    registerReceiver(new BroadcastReceiver(){
-                        @Override
-                        public void onReceive(Context arg0, Intent arg1) {
-                            switch (getResultCode())
-                            {
-                                case Activity.RESULT_OK:
-                                    Toast.makeText(getBaseContext(), "SMS sent",
-                                            Toast.LENGTH_SHORT).show();
-
-                                    ContentValues values = new ContentValues();
-
-                                    values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
-                                    values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
-                                    values.put(Telephony.Sms.BODY, userMsg);
-                                    values.put(Telephony.Sms.DATE_SENT, curMillis);
-                                    getContentResolver().insert(
-                                            Telephony.Sms.CONTENT_URI,
-                                            values);
-
-                                    BlocTalkApplication.getSharedDataSource().getMsgs().get(BlocTalkApplication.getSharedDataSource().getMsgs().size()-1).setTime(Long.toString(curMillis));
-                                    convoMsgItemAdapter.notifyDataSetChanged();
-
-
-                                    break;
-                                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                                    Toast.makeText(getBaseContext(), "Generic failure",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_NO_SERVICE:
-                                    Toast.makeText(getBaseContext(), "No service",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_NULL_PDU:
-                                    Toast.makeText(getBaseContext(), "Null PDU",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_RADIO_OFF:
-                                    Toast.makeText(getBaseContext(), "Radio off",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                        }
-                    }, new IntentFilter(SENT));
-
-                    //---when the SMS has been delivered---
-                    registerReceiver(new BroadcastReceiver(){
-                        @Override
-                        public void onReceive(Context arg0, Intent arg1) {
-                            switch (getResultCode())
-                            {
-                                case Activity.RESULT_OK:
-                                    Toast.makeText(getBaseContext(), "SMS delivered",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case Activity.RESULT_CANCELED:
-                                    Toast.makeText(getBaseContext(), "SMS not delivered",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                        }
-                    }, new IntentFilter(DELIVERED));
-
-                    SmsManager sms = SmsManager.getDefault();
-                    sms.sendTextMessage(BlocTalkApplication.getSharedDataSource().getCurrentRecipient(), null, userMsg, sentPI, deliveredPI);
-                }else{
-                    Editable k = textView.getText();
-                    String f = k.toString();
-
-                    final List<String> recipients = new ArrayList<>();
-
-                    int start = f.indexOf("<");
-                    int end = f.indexOf(">");
-
-                    while(start != -1){
-                        recipients.add(f.substring(start+1, end));
-                        start = f.indexOf("<", end+1);
-                        end = f.indexOf(">", end+1);
-                    }
-
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
-                    formatter.setLenient(false);
-
-                    Date curDate = new Date();
-                    final long curMillis = curDate.getTime();
-                    String curTime = formatter.format(curDate);
-
-                   // BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
-                   // convoMsgItemAdapter.notifyDataSetChanged();
-
-                   // recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
-
-                    String SENT = "SMS_SENT";
-                    String DELIVERED = "SMS_DELIVERED";
-
-                    PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
-                    PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,new Intent(DELIVERED), 0);
-
-                    //---when the SMS has been sent---
-                    registerReceiver(new BroadcastReceiver(){
-                        @Override
-                        public void onReceive(Context arg0, Intent arg1) {
-                            switch (getResultCode())
-                            {
-                                case Activity.RESULT_OK:
-                                    Toast.makeText(getBaseContext(), "SMS sent",
-                                            Toast.LENGTH_SHORT).show();
-
-                                    for(int i = 0; i<recipients.size(); i++){
-                                        ContentValues values = new ContentValues();
-
-                                        values.put(Telephony.Sms.ADDRESS, recipients.get(i));
-                                        values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
-                                        values.put(Telephony.Sms.BODY, userMsg);
-                                        values.put(Telephony.Sms.DATE_SENT, curMillis);
-                                        getContentResolver().insert(
-                                                Telephony.Sms.CONTENT_URI,
-                                                values);
-                                    }
-
-                                    break;
-                                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                                    Toast.makeText(getBaseContext(), "Generic failure",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_NO_SERVICE:
-                                    Toast.makeText(getBaseContext(), "No service",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_NULL_PDU:
-                                    Toast.makeText(getBaseContext(), "Null PDU",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case SmsManager.RESULT_ERROR_RADIO_OFF:
-                                    Toast.makeText(getBaseContext(), "Radio off",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                        }
-                    }, new IntentFilter(SENT));
-
-                    //---when the SMS has been delivered---
-                    registerReceiver(new BroadcastReceiver(){
-                        @Override
-                        public void onReceive(Context arg0, Intent arg1) {
-                            switch (getResultCode())
-                            {
-                                case Activity.RESULT_OK:
-                                    Toast.makeText(getBaseContext(), "SMS delivered",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                                case Activity.RESULT_CANCELED:
-                                    Toast.makeText(getBaseContext(), "SMS not delivered",
-                                            Toast.LENGTH_SHORT).show();
-                                    break;
-                            }
-                        }
-                    }, new IntentFilter(DELIVERED));
-
-                    SmsManager sms = SmsManager.getDefault();
-
-                    for(int z = 0; z<recipients.size(); z++){
-                        sms.sendTextMessage(recipients.get(z), null, userMsg, sentPI, deliveredPI);
-                    }
-
-                }
+                SmsManager sms = SmsManager.getDefault();
+                sms.sendTextMessage(BlocTalkApplication.getSharedDataSource().getCurrentRecipient(), null, userMsg, sentPI, deliveredPI);
         }
     }
 
@@ -436,5 +270,71 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
     };
 
+    class deliverReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent arg1) {
+            switch (getResultCode())
+            {
+                case Activity.RESULT_OK:
+                    Toast.makeText(getBaseContext(), "SMS delivered",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Toast.makeText(getBaseContext(), "SMS not delivered",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+        }
+    }
+
+    class sentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent arg1) {
+            switch (getResultCode()) {
+                case Activity.RESULT_OK:
+                    Toast.makeText(getBaseContext(), "SMS sent",
+                            Toast.LENGTH_SHORT).show();
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+                    formatter.setLenient(false);
+
+                    Date curDate = new Date();
+                    final long curMillis = curDate.getTime();
+                    String curTime = formatter.format(curDate);
+
+                    ContentValues values = new ContentValues();
+
+                    values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
+                    values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
+                    values.put(Telephony.Sms.BODY, userMsg);
+                    values.put(Telephony.Sms.DATE_SENT, curMillis);
+                    getContentResolver().insert(
+                            Telephony.Sms.CONTENT_URI,
+                            values);
+
+                    BlocTalkApplication.getSharedDataSource().getMsgs().get(BlocTalkApplication.getSharedDataSource().getMsgs().size()-1).setTime(Long.toString(curMillis));
+                    convoMsgItemAdapter.notifyDataSetChanged();
+
+                    break;
+                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                    Toast.makeText(getBaseContext(), "Generic failure",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                    Toast.makeText(getBaseContext(), "No service",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_NULL_PDU:
+                    Toast.makeText(getBaseContext(), "Null PDU",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                    Toast.makeText(getBaseContext(), "Radio off",
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
 }
 
