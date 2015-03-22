@@ -22,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +37,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.bloc.android.bloctalk.BlocTalkApplication;
 import io.bloc.android.bloctalk.R;
@@ -63,6 +66,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
     private BroadcastReceiver deliverReceiver;
     String SENT = "SMS_SENT";
     String DELIVERED = "SMS_DELIVERED";
+    List<String> recipients = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -180,16 +184,36 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                 userMsg = message.getText().toString();
                 message.setText("");
 
-                BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
-                convoMsgItemAdapter.notifyDataSetChanged();
-
-                recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
-
                 PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
-                PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,new Intent(DELIVERED), 0);
+                PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), 0);
 
-                SmsManager sms = SmsManager.getDefault();
-                sms.sendTextMessage(BlocTalkApplication.getSharedDataSource().getCurrentRecipient(), null, userMsg, sentPI, deliveredPI);
+                if((textView.getText().toString().equals(""))) {
+                    BlocTalkApplication.getSharedDataSource().getMsgs().add(new MessageItem(userMsg, MessageItem.READ_MSG, MessageItem.OUTGOING_MSG, "Sending..."));
+                    convoMsgItemAdapter.notifyDataSetChanged();
+
+                    recyclerView.smoothScrollToPosition(BlocTalkApplication.getSharedDataSource().getMsgs().size() - 1);
+
+                    SmsManager sms = SmsManager.getDefault();
+                    sms.sendTextMessage(BlocTalkApplication.getSharedDataSource().getCurrentRecipient(), null, userMsg, sentPI, deliveredPI);
+                }else{
+                    Editable k = textView.getText();
+                    String f = k.toString();
+
+                    int start = f.indexOf("<");
+                    int end = f.indexOf(">");
+
+                    while(start != -1){
+                        recipients.add(f.substring(start+1, end));
+                        start = f.indexOf("<", end+1);
+                        end = f.indexOf(">", end+1);
+                    }
+
+                    SmsManager sms = SmsManager.getDefault();
+
+                    for(int z = 0; z<recipients.size(); z++){
+                        sms.sendTextMessage(recipients.get(z), null, userMsg, sentPI, deliveredPI);
+                    }
+                }
         }
     }
 
@@ -303,16 +327,30 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
 
                     ContentValues values = new ContentValues();
 
-                    values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
-                    values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
-                    values.put(Telephony.Sms.BODY, userMsg);
-                    values.put(Telephony.Sms.DATE_SENT, curMillis);
-                    getContentResolver().insert(
-                            Telephony.Sms.CONTENT_URI,
-                            values);
+                    if(recipients.size() > 0){
+                        for(int i = 0; i<recipients.size(); i++){
+                            values.put(Telephony.Sms.ADDRESS, recipients.get(i));
+                            values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
+                            values.put(Telephony.Sms.BODY, userMsg);
+                            values.put(Telephony.Sms.DATE_SENT, curMillis);
+                            getContentResolver().insert(
+                                    Telephony.Sms.CONTENT_URI,
+                                    values);
+                        }
+                    }else{
+                        values.put(Telephony.Sms.ADDRESS, BlocTalkApplication.getSharedDataSource().getCurrentRecipient());
+                        values.put(Telephony.Sms.TYPE, MessageItem.OUTGOING_MSG);
+                        values.put(Telephony.Sms.BODY, userMsg);
+                        values.put(Telephony.Sms.DATE_SENT, curMillis);
+                        getContentResolver().insert(
+                                Telephony.Sms.CONTENT_URI,
+                                values);
 
-                    BlocTalkApplication.getSharedDataSource().getMsgs().get(BlocTalkApplication.getSharedDataSource().getMsgs().size()-1).setTime(Long.toString(curMillis));
-                    convoMsgItemAdapter.notifyDataSetChanged();
+                        BlocTalkApplication.getSharedDataSource().getMsgs().get(BlocTalkApplication.getSharedDataSource().getMsgs().size()-1).setTime(Long.toString(curMillis));
+                        convoMsgItemAdapter.notifyDataSetChanged();
+                    }
+
+
 
                     break;
                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
@@ -337,6 +375,7 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
 
     @Override
     protected void onDestroy(){
+        super.onDestroy();
         unregisterReceiver(sentReceiver);
         unregisterReceiver(deliverReceiver);
     }
