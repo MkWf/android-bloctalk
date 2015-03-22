@@ -70,8 +70,6 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
 
-
-
         sentReceiver = new sentReceiver();
         deliverReceiver = new deliverReceiver();
 
@@ -335,6 +333,12 @@ public class ConversationActivity extends ActionBarActivity implements View.OnCl
                     break;
             }
         }
+    }
+
+    @Override
+    protected void onDestroy(){
+        unregisterReceiver(sentReceiver);
+        unregisterReceiver(deliverReceiver);
     }
 }
 
